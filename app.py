@@ -3,15 +3,13 @@ import pandas as pd
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-# --- Pydantic Schema for Structured Event Intelligence ---
+# --- Pydantic Schema for Structured Event Intelligence (Historical Price Removed) ---
 class EventItem(BaseModel):
     event_title: str = Field(description="Name of the event")
     city: str = Field(description="Location city")
     category: str = Field(description="Category e.g., Sports, Music, Family, Festival, Technology")
     target_age: str = Field(description="Target age group suitability")
     current_cost: float = Field(description="Current ticket price or 0 for free")
-    historical_low: float = Field(description="Historical lowest ticket price")
-    historical_high: float = Field(description="Historical highest ticket price")
     deal_offers: str = Field(description="Available deals, promo codes, or free admission notes")
     why_its_best: str = Field(description="Why this ranks in the top 20% ROI events")
     personal_benefit: str = Field(description="How attending benefits the individual or family")
@@ -27,7 +25,7 @@ st.set_page_config(
 )
 
 st.title("🎟️ Agentic Event Recommendation & Intelligence Aggregator")
-st.markdown("Discover the top 20% high-ROI events tailored to your age, city, and interests in one central hub. View price benchmarks, deal offers, personal benefits, and direct booking links.")
+st.markdown("Discover the top 20% high-ROI events tailored to your age, city, and interests in one central hub. View deal offers, personal benefits, and direct booking links.")
 
 # --- Sidebar Search & Dynamic Criteria ---
 st.sidebar.header("Event Search & Filtering Criteria")
@@ -44,7 +42,7 @@ max_ticket_budget = st.sidebar.slider("Maximum Ticket Budget ($ USD)", min_value
 
 sort_by = st.sidebar.selectbox(
     "Sort Recommendations By",
-    ["Highest ROI / Best Value Score", "Lowest Ticket Price", "Highest Historical Discount"]
+    ["Highest ROI / Best Value Score", "Lowest Ticket Price"]
 )
 
 if st.button("Run Event Intelligence Aggregator", type="primary"):
@@ -58,8 +56,6 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
                 category="Music & Concerts",
                 target_age="All Ages / Family",
                 current_cost=125.00,
-                historical_low=95.00,
-                historical_high=350.00,
                 deal_offers="SeatGeek promo codes available for upper-tier seating.",
                 why_its_best="Stadium-scale global concert draw with elite live production.",
                 personal_benefit="Creates unforgettable family memories and provides high-energy emotional rejuvenation.",
@@ -73,9 +69,6 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
                 category="Technology & Science",
                 target_age="All Ages / Family",
                 current_cost=0.00,
-                historical_low=0.00,
-                historical_high=0.00,
-                deal_rating="100% Free Admission (125+ hands-on exhibits)",
                 deal_offers="Free admission with online RSVP.",
                 why_its_best="Massive one-day celebration of science with interactive learning for all ages.",
                 personal_benefit="Inspires curiosity in children and exposes attendees to cutting-edge tech and scientific breakthroughs.",
@@ -89,8 +82,6 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
                 category="Festivals & Fairs",
                 target_age="All Ages / Family",
                 current_cost=0.00,
-                historical_low=0.00,
-                historical_high=0.00,
                 deal_offers="Free street admission; parking passes available online.",
                 why_its_best="Iconic California fall festival celebrating giant gourds, artisan crafts, and local food.",
                 personal_benefit="Terrific weekend outdoor bonding experience with exceptional seasonal food and community atmosphere.",
@@ -104,8 +95,6 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
                 category="Festivals & Fairs",
                 target_age="All Ages / Family",
                 current_cost=0.00,
-                historical_low=0.00,
-                historical_high=45.00,
                 deal_offers="Free waterfront viewing along Marina Green.",
                 why_its_best="World-class aviation exhibition drawing millions with breathtaking aerial stunts.",
                 personal_benefit="Thrilling spectacle that sparks wonder and provides an exhilarating weekend outing.",
@@ -119,8 +108,6 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
                 category="Family & Community",
                 target_age="All Ages / Family",
                 current_cost=0.00,
-                historical_low=0.00,
-                historical_high=0.00,
                 deal_offers="Free community event hosted by Discover Santa Clara.",
                 why_its_best="Safe, daytime trick-or-treating and family activities in a signature local park.",
                 personal_benefit="Engages young children in community holiday celebrations in a secure, friendly environment.",
@@ -161,14 +148,12 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
         if not filtered_df.empty:
             display_df = filtered_df[[
                 "event_title", "city", "category", "current_cost", 
-                "historical_low", "historical_high", "deal_offers", 
-                "price_worth_verdict", "roi_score"
+                "deal_offers", "price_worth_verdict", "roi_score"
             ]].copy()
             
             display_df.columns = [
                 "Event Title", "City", "Category", "Cost ($)", 
-                "Hist. Low ($)", "Hist. High ($)", "Deals & Offers", 
-                "Worth It Verdict", "ROI Score"
+                "Deals & Offers", "Worth It Verdict", "ROI Score"
             ]
             
             st.dataframe(display_df, use_container_width=True)
@@ -181,7 +166,6 @@ if st.button("Run Event Intelligence Aggregator", type="primary"):
                         st.markdown(f"* **Category & Target:** {row['category']} | Suitable for: `{row['target_age']}`")
                         st.markdown(f"* **Why It's a Top Recommendation:** {row['why_its_best']}")
                         st.markdown(f"* **Personal Benefit:** {row['personal_benefit']}")
-                        st.markdown(f"* **Historical Price Range:** Lowest: ${row['historical_low']} \vert{} Highest:${row['historical_high']}")
                         st.markdown(f"* **Deals & Offers Available:** {row['deal_offers']}")
                         st.markdown(f"* **Suggested Next Steps:** Review schedule, secure free RSVPs or advance tickets early, and add event reminder to family calendar.")
                     with c_right:
